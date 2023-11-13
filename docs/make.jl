@@ -20,6 +20,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/aconitum3/AIS.jl",
+    repo="github.com/Aconitum3/AIS.jl",
     devbranch="main",
 )
