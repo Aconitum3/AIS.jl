@@ -1,23 +1,55 @@
 """
+Geometry is a coordinate on a geographic coordinate system.
 
-`Coordinate` specifies the point in terms of both x-y meter coordinates and longitude-latitude decimal coordinates.
-
+```julia
+struct Geometry
+    longitude::Real
+    latitude::Real
+end
+```
 """
-struct Coordinate
-    x::Real
-    y::Real
+struct Geometry
     longitude::Real
     latitude::Real
 end
 
-function Coordinate(longitude::Real,latitude::Real)
-    x = (longitude - origin.longitude) * longitude_scale
-    y = (latitude - origin.latitude) * latitude_scale
-    return Coordinate(x,y,longitude,latitude)
+# Tokyo Bay Reference Point
+const TokyoBayRefPoint = Geometry(139.0,35.0)
+
+DefaultRefPoint = TokyoBayRefPoint
+
+"""
+Planar is a coordinate on a planar projection of Geometry with ContactPoint as a point of contanct.
+In a Planar Coordinate System, the units are meters.
+
+```julia
+struct Planar
+    x::Real
+    y::Real
+end
+```
+"""
+struct Planar
+    x::Real
+    y::Real
 end
 
-Base.:+(a::Coordinate,b::Coordinate) = Coordinate(a.longitude+b.longitude,a.latitude+b.latitude)
-Base.:-(a::Coordinate,b::Coordinate) = Coordinate(a.longitude-b.longitude,a.latitude-b.latitude)
+"""
+`Planar(G::Geometry;ContactPoint::Geometry=DefaultRefPoint)`
+
+Return a Planar coordinate Planar(x,y) on a planar projection of G with ContactPoint as a point of contact.
+By default, TokyoBayRefPoint is a DefaultRefPoint.
+"""
+
+function Planar(G::Geometry;ContactPoint::Geometry=DefaultRefPoint)
+    lon_scale = longitude_scale(ContactPoint.latitude)
+    x = (G.longitude - ContactPoint.longitude) * lon_scale
+    y = (G.latitude - ContactPoint.latitude) * latitude_scale
+    return Coordinate(x,y)
+end
+
+Base.:+(a::Planar,b::Planar) = Planar(a.x+b.x,a.y+b.y)
+Base.:-(a::Planar,b::Planar) = Planar(a.x-b.x,a.y-b.y)
 
 function Base.cos(a::Coordinate,b::Coordinate)
     norm_a = sqrt(a.x^2 + a.y^2)

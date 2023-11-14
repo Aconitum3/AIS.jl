@@ -2,16 +2,14 @@ module AIS
 
 import Base: +,-,cos,minimum,maximum
 
-"""
-This package is only valid around the origin!
-"""
-
-# Tokyo Bay origin
-const origin = (;longitude=139.0,latitude=35.0)
-
-# Latitude, Longitude scale ( m / 1.0° )
-const longitude_scale = 91_000
+# latitude, longitude scale (m)
 const latitude_scale = 111_000
+
+const equatorial_radius = 6_378_137
+const flattening = 1/(298.257_222_101)
+const eccentricity = sqrt(flattening*(2-flattening))
+longitude_scale(latitude) = π/180 * equatorial_radius * cos(latitude * π/180) / sqrt(1-eccentricity^2 * sin(latitude * π/180)^2)
+
 
 # type system
 include("common.jl")
