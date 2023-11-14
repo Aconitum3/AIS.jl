@@ -51,7 +51,7 @@ end
 Base.:+(a::Planar,b::Planar) = Planar(a.x+b.x,a.y+b.y)
 Base.:-(a::Planar,b::Planar) = Planar(a.x-b.x,a.y-b.y)
 
-function Base.cos(a::Coordinate,b::Coordinate)
+function Base.cos(a::Planar,b::Planar)
     norm_a = sqrt(a.x^2 + a.y^2)
     norm_b = sqrt(b.x^2 + b.y^2)
     
@@ -70,34 +70,34 @@ function Base.cos(a::Coordinate,b::Coordinate)
     end
 end
 
-function dist(a::Coordinate,b::Coordinate)
+function dist(a::Planar,b::Planar)
     return (a.x - b.x)^2 + (a.y - b.y)^2 |> sqrt
 end
 
-dist(a::Coordinate) = dist(Coordinate(0.0,0.0,origin.longitude,origin.latitude),a)
+dist(a::Planar) = dist(Planar(0.0,0.0,origin.longitude,origin.latitude),a)
 
-function Base.minimum(A::Vector{Coordinate};dist=dist)
-    d = map(a -> dist(Coordinate(0.0,0.0,origin.longitude,origin.latitude),a), A)
+function Base.minimum(A::Vector{Planar};dist=dist)
+    d = map(a -> dist(Planar(0.0,0.0,origin.longitude,origin.latitude),a), A)
     return A[argmin(d)]
 end
 
-function Base.maximum(A::Vector{Coordinate};dist=dist)
-    d = map(a -> dist(Coordinate(0.0,0.0,origin.longitude,origin.latitude),a), A)
+function Base.maximum(A::Vector{Planar};dist=dist)
+    d = map(a -> dist(Planar(0.0,0.0,origin.longitude,origin.latitude),a), A)
     return A[argmax(d)]
 end
 
 """
-`rotate Coordinate θ counterclockwise`
+`rotate Planar θ counterclockwise`
 
 
 """
-function rotate(a::Coordinate,θ::Real)
+function rotate(a::Planar,θ::Real)
     R = [cos(θ) -sin(θ);sin(θ) cos(θ)]
     
     p = [a.x, a.y]
     
     q = R*p
     
-    return Coordinate(q[1],q[2])
+    return Planar(q[1],q[2])
 end
 
