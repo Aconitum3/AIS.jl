@@ -40,7 +40,6 @@ end
 Return a Planar coordinate Planar(x,y) on a planar projection of G with ContactPoint as a point of contact.
 By default, TokyoBayRefPoint is a DefaultRefPoint.
 """
-
 function Planar(G::Geometry;ContactPoint::Geometry=DefaultRefPoint)
     lon_scale = longitude_scale(ContactPoint.latitude)
     x = (G.longitude - ContactPoint.longitude) * lon_scale
@@ -48,20 +47,36 @@ function Planar(G::Geometry;ContactPoint::Geometry=DefaultRefPoint)
     return Coordinate(x,y)
 end
 
-Base.:+(a::Planar,b::Planar) = Planar(a.x+b.x,a.y+b.y)
-Base.:-(a::Planar,b::Planar) = Planar(a.x-b.x,a.y-b.y)
+"""
+`Base.:+(A::Planar,B::Planar)`
 
-function Base.cos(a::Planar,b::Planar)
-    norm_a = sqrt(a.x^2 + a.y^2)
-    norm_b = sqrt(b.x^2 + b.y^2)
+Get a composite vector of positional vectors A and B.
+"""
+Base.:+(A::Planar,B::Planar) = Planar(A.x+B.x,A.y+A.y)
+
+"""
+`Base.:-(A::Planar,B::Planar)`
+
+Get a composite vector of positional vectors A and -B.
+"""
+Base.:-(A::Planar,B::Planar) = Planar(A.x-B.x,A.y-B.y)
+
+"""
+`Base.cos(A::Planar,B::Planar)`
+
+Get a cosine of the angle between vectors A and B.
+"""
+function Base.cos(A::Planar,B::Planar)
+    norm_A = sqrt(A.x^2 + A.y^2)
+    norm_B = sqrt(B.x^2 + B.y^2)
     
-    if norm_a == 0.0 || norm_b == 0.0
+    if norm_A == 0.0 || norm_B == 0.0
         return 0.0
     end
     
-    inner_product_ab = a.x * b.x + a.y * b.y
+    inner_product_AB = A.x * B.x + A.y * B.y
     
-    result = inner_product_ab / (norm_a * norm_b)
+    result = inner_product_AB / (norm_A * norm_B)
     
     if result > 1.0
         return 1.0
@@ -70,25 +85,43 @@ function Base.cos(a::Planar,b::Planar)
     end
 end
 
-function dist(a::Planar,b::Planar)
-    return (a.x - b.x)^2 + (a.y - b.y)^2 |> sqrt
+"""
+`dist(A::Planar,B::Planar)`
+
+Get the Euclid distance of A and B. 
+
+`dist(A::Planar) = dist(A,Planar(0.0,0.0))`
+"""
+function dist(A::Planar,B::Planar)
+    return (A.x - B.x)^2 + (A.y - B.y)^2 |> sqrt
 end
 
-dist(a::Planar) = dist(Planar(0.0,0.0,origin.longitude,origin.latitude),a)
+dist(A::Planar) = dist(Planar(0.0,0.0),A)
 
+"""
+```julia
+Base.minimum(A::Vector{Planar};dist=dist)
+Base.maximum(A::Vector{Planar};dist=dist)
+```
+
+
+Return the element of A with the minimum (maximum) distance from the origin `Planar(0.0,0.0)`.
+By default, the distance is Euclid distance.
+"""
 function Base.minimum(A::Vector{Planar};dist=dist)
-    d = map(a -> dist(Planar(0.0,0.0,origin.longitude,origin.latitude),a), A)
+    d = map(a -> dist(Planar(0.0,0.0),a), A)
     return A[argmin(d)]
 end
-
 function Base.maximum(A::Vector{Planar};dist=dist)
-    d = map(a -> dist(Planar(0.0,0.0,origin.longitude,origin.latitude),a), A)
+    d = map(a -> dist(Planar(0.0,0.0),a), A)
     return A[argmax(d)]
 end
 
 """
-`rotate Planar θ counterclockwise`
-
+```julia
+rotate(A::Planar,θ::Real)
+```
+Get a Planar rotated A θ counterclockwise
 
 """
 function rotate(a::Planar,θ::Real)
