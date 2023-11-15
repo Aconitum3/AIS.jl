@@ -1,6 +1,9 @@
 module AIS
 
 import Base: +,-,cos,minimum,maximum
+import Statistics: mean
+
+using Plots
 
 # latitude, longitude scale (m)
 const latitude_scale = 111_000
@@ -13,5 +16,7 @@ longitude_scale(latitude) = π/180 * equatorial_radius * cos(latitude * π/180) 
 
 # type system
 include("common.jl")
+# plot.jl recipe
+include("plots.jl")
 
 end
