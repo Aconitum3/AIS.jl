@@ -1,5 +1,5 @@
 """
-Geometry is a coordinate on a geographic coordinate system.
+Geometry is a coordinate on the geographic coordinate system.
 
 ```julia
 struct Geometry
@@ -19,7 +19,7 @@ const TokyoBayRefPoint = Geometry(139.0,35.0)
 DefaultRefPoint = TokyoBayRefPoint
 
 """
-Planar is a coordinate on a planar projection of Geometry with ContactPoint as a point of contanct.
+Planar is a coordinate on the planar projection of Geometry with ContactPoint as a point of contanct.
 In a Planar Coordinate System, the units are meters.
 
 ```julia
@@ -37,7 +37,7 @@ end
 """
 `Planar(G::Geometry;ContactPoint::Geometry=DefaultRefPoint)`
 
-Return a Planar coordinate Planar(x,y) on a planar projection of G with ContactPoint as a point of contact.
+Return a Planar coordinate Planar(x,y) on the planar projection of G with ContactPoint as a point of contact.
 By default, TokyoBayRefPoint is a DefaultRefPoint.
 """
 function Planar(G::Geometry;ContactPoint::Geometry=DefaultRefPoint)
@@ -104,14 +104,22 @@ Base.minimum(A::Vector{Planar};dist=dist)
 Base.maximum(A::Vector{Planar};dist=dist)
 ```
 
-
-Return the element of A with the minimum (maximum) distance from the origin `Planar(0.0,0.0)`.
+Return the element of A with the minimum distance from the origin `Planar(0.0,0.0)`.
 By default, the distance is Euclid distance.
 """
 function Base.minimum(A::Vector{Planar};dist=dist)
     d = map(a -> dist(Planar(0.0,0.0),a), A)
     return A[argmin(d)]
 end
+
+"""
+```julia
+Base.maximum(A::Vector{Planar};dist=dist)
+```
+
+Return the element of A with the maximum distance from the origin `Planar(0.0,0.0)`.
+By default, the distance is Euclid distance.
+"""
 function Base.maximum(A::Vector{Planar};dist=dist)
     d = map(a -> dist(Planar(0.0,0.0),a), A)
     return A[argmax(d)]
@@ -121,8 +129,8 @@ end
 ```julia
 rotate(A::Planar,θ::Real)
 ```
-Get a Planar rotated A θ counterclockwise
 
+Get a Planar rotated A θ counterclockwise
 """
 function rotate(a::Planar,θ::Real)
     R = [cos(θ) -sin(θ);sin(θ) cos(θ)]
@@ -134,3 +142,84 @@ function rotate(a::Planar,θ::Real)
     return Planar(q[1],q[2])
 end
 
+
+function mean(P::Vector{Planar})
+    n = length(P)
+    S = sum(P)
+    return Planar(S.x/n, S.y/n)
+end
+"""
+ConvexPolygon is a convex polygon on planar and geographic coordinate system.
+`ConvexPolygon.gvertex` is vertexes of the convex polygon on the geographic coordinate system. 
+`ConvexPolygon.pvertex` is vertexes of the convex polygon on the planar coordinate system.
+
+```
+struct ConvexPolygon
+    gvertex::Vector{Geometry}
+    pvertex::Vector{Planar}
+end
+```
+"""
+struct ConvexPolygon
+    gvertex::Vector{Geometry}
+    pvertex::Vector{Planar}
+end
+
+"""
+`CrossProduct(A::Geometry,B::Geometry,C::Geometry)`
+
+Get a cross product of B-A and C-A.
+"""
+CrossProduct(a::Geometry,b::Geometry,c::Geometry) = (b.longitude - a.longitude)*(c.latitude - a.latitude) - (b.latitude - a.latitude)*(c.longitude - a.longitude)
+
+
+"""
+`CrossProduct(A::Planar,B::Planar,C::Planar)`
+
+Get a cross product of B-A and C-A.
+"""
+CrossProduct(a::Planar,b::Planar,c::Planar) = (b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)
+
+"""
+
+`InOutJudge(A::ConvexPolygon,x::Geometry)`
+
+Return `true` if x is in A.
+"""
+function InOutJudge(A::ConvexPolygon,x::Geometry)
+    n = length(A.gvertex)
+    vertex = A.gvertex[[1:end;1]]
+    
+    flag₀ = CrossProduct(vertex[1],x,vertex[2]) |> sign
+    
+    for i in 1:n
+        flag₁ = CrossProduct(vertex[i],x,vertex[i+1]) |> sign
+        if flag₀*flag₁ < 0
+            return false
+        end
+        flag₀ = flag₁
+    end
+    return true
+end
+
+"""
+
+`InOutJudge(A::ConvexPolygon,x::Planar)`
+
+Return `true` if x is in A.
+"""
+function InOutJudge(A::ConvexPolygon,x::Planar)
+    n = length(A.pvertex)
+    vertex = A.pvertex[[1:end;1]]
+    
+    flag₀ = CrossProduct(vertex[1],x,vertex[2]) |> sign
+    
+    for i in 1:n
+        flag₁ = CrossProduct(vertex[i],x,vertex[i+1]) |> sign
+        if flag₀*flag₁ < 0
+            return false
+        end
+        flag₀ = flag₁
+    end
+    return true
+end
