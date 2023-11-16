@@ -167,12 +167,6 @@ function rotate(a::Planar,θ::Real)
     return Planar(q[1],q[2])
 end
 
-
-function mean(P::Vector{Planar})
-    n = length(P)
-    S = sum(P)
-    return Planar(S.x/n, S.y/n)
-end
 """
 ConvexPolygon is a convex polygon on planar and geographic coordinate system.
 `ConvexPolygon.gvertex` is vertexes of the convex polygon on the geographic coordinate system. 
