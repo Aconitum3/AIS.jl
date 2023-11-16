@@ -1,11 +1,7 @@
 """
 `extractEdge(P::Vector{Planar})`
 
-get edge of P. `P[i]` is an edge candigate if `P[i]` satisfies the following. $P_i$ is `P[i]`
-
-$$
-\cos(P_i,P_{i-1}) < 0
-$$
+get edge of P. `P[i]` is an edge candigate if `P[i]` satisfies `cos(P[i],P[i-1])<0`
 
 Edge is the pair that maximize Euclid distance in edge candigates.
 
