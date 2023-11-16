@@ -1,7 +1,6 @@
 module AIS
 
 import Base: +,-,cos,minimum,maximum
-import Statistics: mean
 
 using Plots
 
