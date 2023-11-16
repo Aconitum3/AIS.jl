@@ -62,9 +62,11 @@ Get a composite vector of positional vectors A and -B.
 Base.:-(A::Planar,B::Planar) = Planar(A.x-B.x,A.y-B.y)
 
 """
-`Statistics.mean(P::Vector{Planar})`
+`mean(P::Vector{Planar})`
+
+Get a mean vector of P.
 """
-function Statistics.mean(P::Vector{Planar})
+function mean(P::Vector{Planar})
     n = length(P)
     S = sum(P)
     return Planar(S.x/n, S.y/n)
