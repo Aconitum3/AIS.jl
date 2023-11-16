@@ -79,7 +79,7 @@ function AngleFromBasePoint(P::Vector{Planar};d=100)
     APvec = BP.mid - BP.ap    
     
     V = P .- BP.ap
-    θ = [cos(APvec,v) |> x -> floor(x,digits=5) |> acos; for v in V]
+    θ = [(cos(APvec,v) |> x -> floor(x,digits=5) |> acos); for v in V]
     
     return θ
 end
