@@ -18,5 +18,6 @@ longitude_scale(latitude) = π/180 * equatorial_radius * cos(latitude * π/180) 
 include("common.jl")
 # plot.jl recipe
 include("plots.jl")
-
+# angle tools
+include("angletools.jl")
 end
