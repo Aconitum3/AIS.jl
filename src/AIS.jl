@@ -19,4 +19,6 @@ include("common.jl")
 include("plots.jl")
 # angle tools
 include("angletools.jl")
+# PostgreSQL tools
+include("PQUtils.jl")
 end
