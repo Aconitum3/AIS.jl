@@ -2,6 +2,7 @@ module AIS
 
 import Base: +,-,cos,minimum,maximum
 
+using LibPQ
 using Plots
 
 # latitude, longitude scale (m)
