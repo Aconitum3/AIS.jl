@@ -22,4 +22,9 @@ include("plots.jl")
 include("angletools.jl")
 # PostgreSQL tools
 include("PQUtils.jl")
+
+export Geometry, Planar, ConvexPolygon
+export mean, dist, rotate, InOutJudge, AngleFromBasePoint 
+
 end
+

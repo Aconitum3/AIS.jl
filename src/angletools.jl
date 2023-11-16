@@ -69,7 +69,7 @@ end
 get vector of angle between the vertex of `estimateBasePoint` and `P[i]`.
 Strictry, Angle at the vartex V of a triangle consisting of three points V, P[i], and the mid point of triangle base. 
 """
-function AngleAnchoringPoint(P::Vector{Planar};d=100)
+function AngleFromBasePoint(P::Vector{Planar};d=100)
     BP = estimateBasePoint(P,d=d,returnMid=true)
     
     if isnothing(BP)
