@@ -62,6 +62,15 @@ Get a composite vector of positional vectors A and -B.
 Base.:-(A::Planar,B::Planar) = Planar(A.x-B.x,A.y-B.y)
 
 """
+`Statistics.mean(P::Vector{Planar})`
+"""
+function Statistics.mean(P::Vector{Planar})
+    n = length(P)
+    S = sum(P)
+    return Planar(S.x/n, S.y/n)
+end
+
+"""
 `Base.cos(A::Planar,B::Planar)`
 
 Get a cosine of the angle between vectors A and B.
@@ -91,6 +100,10 @@ end
 Get the Euclid distance of A and B. 
 
 `dist(A::Planar) = dist(A,Planar(0.0,0.0))`
+
+`dist(P::Vector{Planar})`
+
+Get the Euclid distance matrix of each element of P
 """
 function dist(A::Planar,B::Planar)
     return (A.x - B.x)^2 + (A.y - B.y)^2 |> sqrt
@@ -98,10 +111,20 @@ end
 
 dist(A::Planar) = dist(Planar(0.0,0.0),A)
 
+function dist(P::Vector{Planar})
+    n = length(P)
+    DMat = zeros(n,n)
+    for i in 1:n
+        for j in i+1:n
+            DMat[i,j] = dist(P[i],P[j])
+        end
+    end
+    return Symmetric(DMat)
+end
+
 """
 ```julia
 Base.minimum(A::Vector{Planar};dist=dist)
-Base.maximum(A::Vector{Planar};dist=dist)
 ```
 
 Return the element of A with the minimum distance from the origin `Planar(0.0,0.0)`.
@@ -159,10 +182,18 @@ struct ConvexPolygon
     pvertex::Vector{Planar}
 end
 ```
+
+`ConvexPolygon(G::Vector{Geometry}) = ConvexPolygon(G,Planar.(G))`
+
 """
 struct ConvexPolygon
     gvertex::Vector{Geometry}
     pvertex::Vector{Planar}
+end
+
+function ConvexPolygon(gvertex::Vector{Geometry})
+    pvertex = Planar.(gvertex)
+    return ConvexPolygon(gvertex,pvertex)
 end
 
 """
