@@ -8,6 +8,7 @@ Edge is the pair that maximize Euclid distance in edge candigates.
 """
 function extractEdge(P::Vector{Planar})
     n = length(P)
+
     edge_candigate = [cos(P[i] - P[i-1],P[i-1] - P[i-2]) for i in 3:n] |> x -> findall(x.<0) .+ 1
 
     if length(edge_candigate) < 2
@@ -27,11 +28,10 @@ Return the mid point of the triangle base if `returnMid=true`.
 
 """
 function estimateBasePoint(P::Vector{Planar};d=100,returnMid=false)
-    n = length(P)
     ap_rotated = nothing
     
     # get edge
-    edge = getedge(P)
+    edge = extractEdge(P)
     if isnothing(edge)
         return nothing
     end
@@ -64,22 +64,36 @@ end
 
 
 """
-`AngleFromBasePoint(P::Vector{Planar};d=100)`
+`cosFromBasePoint(P::Vector{Planar};d=100)`
 
-get vector of angle between the vertex of `estimateBasePoint` and `P[i]`.
-Strictry, Angle at the vartex V of a triangle consisting of three points V, P[i], and the mid point of triangle base. 
+get vector of cosine between the vertex of `estimateBasePoint` and `P[i]`.
+Strictry, cosine of the angle at vertex V of a triangle consisting of three points V, P[i], and the mid point of triangle base. 
 """
-function AngleFromBasePoint(P::Vector{Planar};d=100)
+function counterclockwiseFromBasePoint(P::Vector{Planar};d=100)
     BP = estimateBasePoint(P,d=d,returnMid=true)
-    
+
     if isnothing(BP)
         return nothing
     end
     
     APvec = BP.mid - BP.ap    
     
-    V = P .- BP.ap
-    θ = [(cos(APvec,v) |> x -> floor(x,digits=5) |> acos); for v in V]
+    V = [A - BP.ap; for A in P]
+    θ = [(cos(APvec,v) |> x -> floor(x,digits=5)); for v in V]
+    
+    return θ
+end
+
+function cosFromBasePoint(p::Planar,P::Vector{Planar};d=100)
+    BP = estimateBasePoint(P,d=d,returnMid=true)
+
+    if isnothing(BP)
+        return nothing
+    end
+    
+    APvec = BP.mid - BP.ap    
+    
+    θ = cos(APvec,p - BP.ap) |> x -> floor(x,digits=5)
     
     return θ
 end

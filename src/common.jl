@@ -44,7 +44,7 @@ function Planar(G::Geometry;ContactPoint::Geometry=DefaultRefPoint)
     lon_scale = longitude_scale(ContactPoint.latitude)
     x = (G.longitude - ContactPoint.longitude) * lon_scale
     y = (G.latitude - ContactPoint.latitude) * latitude_scale
-    return Coordinate(x,y)
+    return Planar(x,y)
 end
 
 """
@@ -52,7 +52,7 @@ end
 
 Get a composite vector of positional vectors A and B.
 """
-Base.:+(A::Planar,B::Planar) = Planar(A.x+B.x,A.y+A.y)
+Base.:+(A::Planar,B::Planar) = Planar(A.x+B.x,A.y+B.y)
 
 """
 `Base.:-(A::Planar,B::Planar)`

@@ -35,3 +35,25 @@ end
     
     (longitude[[1:end;1]], latitude[[1:end;1]])
 end
+
+
+@recipe function f(a::Planar)
+    
+    markersize --> 4
+    markerstrokewidth --> 0
+        
+    [(a.x,a.y)]
+end
+
+@recipe function f(A::Vector{Planar})
+    X = A .|> a -> a.x
+    Y  = A .|> a -> a.y
+    
+    size --> (500,500)
+    
+    markersize --> 1
+    markerstrokewidth --> 0
+    label --> false
+            
+    (X,Y)
+end

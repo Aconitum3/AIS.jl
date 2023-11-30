@@ -2,6 +2,7 @@ module AIS
 
 import Base: +,-,cos,minimum,maximum
 
+using LinearAlgebra
 using LibPQ
 using Plots
 
@@ -24,7 +25,7 @@ include("angletools.jl")
 include("PQUtils.jl")
 
 export Geometry, Planar, ConvexPolygon
-export mean, dist, rotate, InOutJudge, AngleFromBasePoint 
+export mean, dist, rotate, InOutJudge, cosFromBasePoint 
 
 end
 
