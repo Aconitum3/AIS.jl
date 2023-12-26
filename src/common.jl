@@ -187,6 +187,7 @@ end
 ```
 
 `ConvexPolygon(G::Vector{Geometry}) = ConvexPolygon(G,Planar.(G))`
+`ConvexPolygon(P::Vector{Planar}) = ConvexPolygon(Geometry.(P),P)`
 
 """
 struct ConvexPolygon
@@ -214,21 +215,16 @@ rotate(CP::ConvexPolygon,θ) = ConvexPolygon(rotate.(CP.pvertex,θ))
 
 """
 `CrossProduct(A::Geometry,B::Geometry,C::Geometry)`
-
-Get a cross product of B-A and C-A.
-"""
-CrossProduct(a::Geometry,b::Geometry,c::Geometry) = (b.longitude - a.longitude)*(c.latitude - a.latitude) - (b.latitude - a.latitude)*(c.longitude - a.longitude)
-
-"""
 `CrossProduct(A::Planar,B::Planar,C::Planar)`
 
 Get a cross product of B-A and C-A.
 """
+CrossProduct(a::Geometry,b::Geometry,c::Geometry) = (b.longitude - a.longitude)*(c.latitude - a.latitude) - (b.latitude - a.latitude)*(c.longitude - a.longitude)
 CrossProduct(a::Planar,b::Planar,c::Planar) = (b.x - a.x)*(c.y - a.y) - (b.y - a.y)*(c.x - a.x)
 
 """
-
 `InOutJudge(A::ConvexPolygon,x::Geometry)`
+`InOutJudge(A::ConvexPolygon,x::Planar)`
 
 Return `true` if x is in A.
 """
@@ -248,12 +244,6 @@ function InOutJudge(A::ConvexPolygon,x::Geometry)
     return true
 end
 
-"""
-
-`InOutJudge(A::ConvexPolygon,x::Planar)`
-
-Return `true` if x is in A.
-"""
 function InOutJudge(A::ConvexPolygon,x::Planar)
     n = length(A.pvertex)
     vertex = A.pvertex[[1:end;1]]

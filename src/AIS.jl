@@ -2,9 +2,14 @@ module AIS
 
 import Base: +,-,cos,minimum,maximum
 
+# math packages
 using LinearAlgebra
+
+# connect PostgreSQL
 using LibPQ
-using Plots
+
+# Plots.jl Recipes
+using RecipesBase
 
 # latitude, longitude scale (m)
 const latitude_scale = 111_000
