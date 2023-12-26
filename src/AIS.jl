@@ -17,15 +17,18 @@ longitude_scale(latitude) = π/180 * equatorial_radius * cos(latitude * π/180) 
 
 # type system
 include("common.jl")
+include("shipstruct.jl")
+
 # plot.jl recipe
 include("plots.jl")
-# angle tools
-include("angletools.jl")
+# angle tools  DEPRECATED
+#include("angletools.jl")
 # PostgreSQL tools
 include("PQUtils.jl")
 
-export Geometry, Planar, ConvexPolygon
-export mean, dist, rotate, InOutJudge, cosFromBasePoint 
+export Geometry, Planar, ConvexPolygon, Ship
+export mean, dist, rotate, InOutJudge
+# export cosFromBasePoint 
 
 end
 

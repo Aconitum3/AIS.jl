@@ -12,7 +12,7 @@ end
     longitude = A .|> a -> a.longitude
     latitude  = A .|> a -> a.latitude
     
-    aspect_ratio --> longitude_scale(DefaultRefPoint.latitude) / latitude_scale
+    aspect_ratio --> latitude_scale / longitude_scale(DefaultRefPoint.latitude)
     size --> (500,500)
     
     markersize --> 1
@@ -22,18 +22,29 @@ end
     (longitude,latitude)
 end
 
-@recipe function f(A::ConvexPolygon)
-    longitude = A.gvertex .|> a -> a.longitude
-    latitude = A.gvertex .|> a -> a.latitude
+@recipe function f(A::ConvexPolygon;type=:Geometry)
     
-    aspect_ratio --> longitude_scale(DefaultRefPoint.latitude) / latitude_scale
     size --> (500,500)
     
     markersize --> 1
     markerstrokewidth --> 0
     label --> false
     
-    (longitude[[1:end;1]], latitude[[1:end;1]])
+    if type == :Geometry
+        longitude = A.gvertex .|> a -> a.longitude
+        latitude = A.gvertex .|> a -> a.latitude
+        
+        aspect_ratio --> latitude_scale / longitude_scale(DefaultRefPoint.latitude)
+        
+        (longitude[[1:end;1]], latitude[[1:end;1]])
+    elseif type == :Planar
+        x = A.pvertex .|> a -> a.x
+        y = A.pvertex .|> a -> a.y
+
+        aspect_ratio --> 1.0
+
+        (x[[1:end;1]], y[[1:end;1]])
+    end
 end
 
 
@@ -57,3 +68,42 @@ end
             
     (X,Y)
 end
+
+@recipe function f(A::Ship;type=:Geometry)
+
+    if type == :Geometry
+        @series begin
+
+            type --> type
+
+            A.Shape
+        end
+        
+        
+        aspect_ratio --> latitude_scale / longitude_scale(DefaultRefPoint.latitude)
+
+        label --> false
+
+        seriestype := :scatter
+        markersize --> 5
+        
+        A.Geometry
+    elseif type == :Planar
+       @series begin
+
+            type --> type
+
+            A.Shape
+       end 
+
+       aspect_ratio --> 1.0
+
+       label --> false
+
+       seriestype := :scatter
+       markersize --> 5
+
+       A.Planar
+    end
+end
+    

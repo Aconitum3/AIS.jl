@@ -47,6 +47,13 @@ function Planar(G::Geometry;ContactPoint::Geometry=DefaultRefPoint)
     return Planar(x,y)
 end
 
+function Geometry(P::Planar;ContactPoint::Geometry=DefaultRefPoint)
+    lon_scale = longitude_scale(ContactPoint.latitude)
+    lon = (P.x / lon_scale) + ContactPoint.longitude
+    lat = (P.y / latitude_scale) + ContactPoint.latitude
+    return Geometry(lon,lat)
+end
+
 """
 `Base.:+(A::Planar,B::Planar)`
 
@@ -192,13 +199,25 @@ function ConvexPolygon(gvertex::Vector{Geometry})
     return ConvexPolygon(gvertex,pvertex)
 end
 
+function ConvexPolygon(pvertex::Vector{Planar})
+    gvertex = Geometry.(pvertex)
+    return ConvexPolygon(gvertex,pvertex)
+end
+
+Base.:+(CP::ConvexPolygon,G::Geometry) = ConvexPolygon(map(g -> g + G, CP.gvertex))
+Base.:-(CP::ConvexPolygon,G::Geometry) = ConvexPolygon(map(g -> g - G, CP.gvertex))
+
+Base.:+(CP::ConvexPolygon,P::Planar) = ConvexPolygon(map(p -> p + P, CP.pvertex))
+Base.:-(CP::ConvexPolygon,P::Planar) = ConvexPolygon(map(p -> p - P, CP.pvertex))
+
+rotate(CP::ConvexPolygon,θ) = ConvexPolygon(rotate.(CP.pvertex,θ))
+
 """
 `CrossProduct(A::Geometry,B::Geometry,C::Geometry)`
 
 Get a cross product of B-A and C-A.
 """
 CrossProduct(a::Geometry,b::Geometry,c::Geometry) = (b.longitude - a.longitude)*(c.latitude - a.latitude) - (b.latitude - a.latitude)*(c.longitude - a.longitude)
-
 
 """
 `CrossProduct(A::Planar,B::Planar,C::Planar)`
